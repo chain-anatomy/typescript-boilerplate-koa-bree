@@ -1,8 +1,10 @@
 import 'reflect-metadata';
 import Bree from 'bree';
+import dotenv from 'dotenv';
 import http from 'http';
 import Koa from 'koa';
 import path from 'path';
+dotenv.config({ path: `./${process.env.ENV || ''}.env` });
 
 import { createApp } from '@/app';
 import { config } from '@/config';

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Typescript boilerplate for basic web server",
   "main": "dist/index.js",
-  "author": "Young.Kim",
+  "author": "Young.Kim,ChainAnatomy",
   "license": "UNLICENSED",
   "scripts": {
     "watch-start": "yarn lint-ts && nodemon --watch src -e ts,tsx --exec ts-node src/index.ts",

@@ -1,38 +1,12 @@
 import dotenv from 'dotenv';
-import fs from 'fs';
-
-// import { logger } from './logger';
+if (!process.env.dotenvLoaded) {
+  dotenv.config({ path: `./${process.env.ENV || ''}.env` });
+  process.env.dotenvLoaded = 'y';
+}
 
 const environment = process.env.ENV || 'local';
 const isDevMode = environment.includes('local');
 const isSync = (process.env.SYNC || 'False').includes('True');
-
-function applyEnv(environment: string) {
-  const candidateEnvFilePath = `${environment}.env` || 'local.env';
-  const targetEnvFilePath = (() => {
-    if (fs.existsSync(candidateEnvFilePath)) {
-      return candidateEnvFilePath;
-    }
-    return null;
-  })();
-
-  if (targetEnvFilePath) {
-    // logger.info(`Using environment file ${targetEnvFilePath}...`);
-    dotenv.config({
-      path: targetEnvFilePath,
-    });
-    return;
-  }
-
-  throw new Error(`${candidateEnvFilePath} not found. Please provice proper ENV environment variable.`);
-}
-
-if (process.env.ENV) {
-  applyEnv(process.env.ENV);
-}
-// else {
-//   console.warn('ENV environment variable is not provided. Using default configuration...');
-// }
 
 export interface Config {
   [key: string]: number | boolean | string | string[];
