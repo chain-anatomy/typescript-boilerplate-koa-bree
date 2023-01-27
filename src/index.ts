@@ -10,12 +10,36 @@ import { createApp } from '@/app';
 import { config } from '@/config';
 import { dataSource } from '@/dataSource';
 import { logger } from '@/logger';
+import { WorkerOptions } from 'worker_threads';
 
 function typescript_worker() {
   const path = require('path');
   require('ts-node').register();
   const workerData = require('worker_threads').workerData;
   require(path.resolve(__dirname, workerData.__filename));
+}
+
+class BreeJob {
+  public name: string;
+  public path: string | (() => void);
+  public interval: string | number;
+  public worker: WorkerOptions;
+
+  constructor(name: string, filename: string, interval: string | number) {
+    this.interval = interval;
+    if (config.isDevMode) {
+      this.name = name + '-ts';
+      this.path = typescript_worker;
+      this.worker = {
+        workerData: {
+          __filename: path.join('src/job/', filename + '.ts'),
+        },
+      };
+    } else {
+      this.name = name + '-js';
+      this.path = path.join(__dirname, 'job/', filename + '.js');
+    }
+  }
 }
 
 (async () => {
@@ -39,26 +63,7 @@ function typescript_worker() {
   const bree = new Bree({
     logger: false,
     root: false,
-    jobs: config.isDevMode
-      ? [
-          {
-            name: 'testJob-ts',
-            path: typescript_worker,
-            interval: '1m',
-            worker: {
-              workerData: {
-                __filename: path.join('src/job/', 'testJob.ts'),
-              },
-            },
-          },
-        ]
-      : [
-          {
-            name: 'testJob-js',
-            interval: '1m',
-            path: path.join(__dirname, 'job/', 'testJob.js'),
-          },
-        ],
+    jobs: [new BreeJob('testJob', 'testJob', '1m')],
   });
   await bree.start();
 
