@@ -25,7 +25,7 @@ class BreeJob {
 
   constructor(name: string, filename: string, interval: string | number) {
     this.interval = interval;
-    if (config.isDevMode) {
+    if (config.isTSNode) {
       this.name = name + '-ts';
       this.path = typescript_worker;
       this.worker = {
